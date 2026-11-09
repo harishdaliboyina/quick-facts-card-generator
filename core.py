@@ -37,6 +37,14 @@ def fetch_image_bytes(url):
     return resp.content, resp.headers.get("Content-Type", "image/jpeg").split(";")[0]
 
 
+def _friendly_gateway_error(e):
+    msg = str(e)
+    if "403" in msg:
+        return ("AI design needs Talabat's internal network, which this public link can't reach "
+                "from here. Used the reliable template instead.")
+    return f"Gateway call failed: {msg}"
+
+
 def _extract_image_b64(obj):
     if obj is None:
         return None
@@ -113,7 +121,7 @@ def generate_full_card_ai(api_base, model, api_key, ref_bytes, mime_type, item_n
     try:
         response = client.chat.completions.create(model=model, messages=[{"role": "user", "content": content}])
     except Exception as e:
-        return None, f"Gateway call failed: {e}"
+        return None, _friendly_gateway_error(e)
 
     try:
         raw = response.model_dump()
@@ -156,7 +164,7 @@ def generate_ai_image(api_base, model, api_key, ref_bytes, mime_type, item_name)
     try:
         response = client.chat.completions.create(model=model, messages=[{"role": "user", "content": content}])
     except Exception as e:
-        return None, f"Gateway call failed: {e}"
+        return None, _friendly_gateway_error(e)
 
     try:
         raw = response.model_dump()
@@ -186,7 +194,7 @@ def auto_generate_facts(item_name, api_base, model, api_key):
         response = client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}])
         text = (response.choices[0].message.content or "").strip()
     except Exception as e:
-        return None, f"Gateway call failed: {e}"
+        return None, _friendly_gateway_error(e)
 
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:

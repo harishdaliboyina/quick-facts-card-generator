@@ -40,10 +40,10 @@ st.caption("F&V Quick Facts infographics — draft, generate, package")
 
 api_key = get_api_key()
 if not api_key:
-    st.warning(
-        "No GEMINI_API_KEY configured in Secrets. Cards will fall back to the simple coded "
-        "template, and missing fact fields won't be auto-generated. Add a secret named "
-        "GEMINI_API_KEY in your Streamlit Cloud app settings to enable AI design."
+    st.info(
+        "This is the reliable, fast template version of the card generator. "
+        "(AI-designed cards need Talabat's internal network and aren't available on this "
+        "public link — provide a Reference Image URL and fill in the facts below for best results.)"
     )
 
 tab_single, tab_bulk = st.tabs(["Single Item", "Bulk Upload"])
